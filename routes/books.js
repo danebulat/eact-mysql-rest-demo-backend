@@ -71,12 +71,18 @@ router.post('/books', bookValidate, async (req, res, next) => {
 
     if (result.affectedRows) {
       const q2 = `
-        SELECT * FROM books WHERE title = '${data.title}'`;
+        SELECT * FROM books 
+        ORDER BY id DESC 
+        LIMIT 1
+      `;
 
       const row = await db.query(q2);
       const newBook = emptyOrRows(row);
 
       res.json(newBook);
+    }
+    else {
+      throw new Error("Error adding book");
     }
   }
   catch (err) {
