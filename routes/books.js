@@ -4,6 +4,7 @@ import { validationResult, matchedData } from 'express-validator';
 import { fileURLToPath } from 'url';
 import { bookValidate }  from '../validation/books.js';
 import * as db           from '../services/db.js';
+import { escape }        from 'mysql2';
 import { emptyOrRows }   from '../helper.js';
 import config            from '../config.js';
 
@@ -61,10 +62,10 @@ router.post('/books', bookValidate, async (req, res, next) => {
           \`title\`, \`desc\`, \`price\`, \`cover\`
         )
       VALUES (
-        '${data.title}',
-        '${data.desc}',
-         ${data.price},
-        '${data.cover}'
+        ${escape(data.title)},
+        ${escape(data.desc)},
+        ${data.price},
+        ${escape(data.cover)}
     )`;
 
     const result = await db.query(sql);
@@ -127,10 +128,10 @@ router.put('/books/:id', bookValidate, async (req, res, next) => {
     const data = matchedData(req);
     const sql = `
       UPDATE books
-      SET \`title\` = '${data.title}',
-          \`desc\`  = '${data.desc}',
-          \`price\` =  ${data.price},
-          \`cover\` = '${data.cover}'
+      SET \`title\` = ${escape(data.title)},
+          \`desc\`  = ${escape(data.desc)},
+          \`price\` = ${data.price},
+          \`cover\` = ${escape(data.cover)}
       WHERE id = ${req.params.id}
     `;
 
